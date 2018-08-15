@@ -20,6 +20,8 @@ elif [[ "$PROMPT_TYPE" == "POWERLINE" ]]; then
     if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
         PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
     fi
+elif [ -f /usr/local/share/liquidprompt ]; then
+    . /usr/local/share/liquidprompt
 fi
 
 function _update_ps1() {
