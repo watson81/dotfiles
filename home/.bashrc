@@ -22,17 +22,9 @@ _commandExists brew && [[ -f $(brew --prefix)/etc/bash_completion ]] && . $(brew
 # Set up the prompt
 if [ -r ~/.bash_prompt ] && ( [ "$PROMPT_TYPE" == "CUSTOM" ] || [ ! -r $LIQUID_PROMPT ] ); then
     . ~/.bash_prompt
-elif [[ "$PROMPT_TYPE" == "POWERLINE" ]]; then
-    if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
-        PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
-    fi
 elif [ -r $LIQUID_PROMPT ]; then
     . $LIQUID_PROMPT
 fi
-
-function _update_ps1() {
-    PS1=$(powerline-shell $?)
-}
 
 # Leave ls alone. -G enables colors
 #alias ls='ls -G'
