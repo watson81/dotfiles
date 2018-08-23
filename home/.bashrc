@@ -7,6 +7,11 @@ PROMPT_TYPE="CUSTOM"
 # if custom: YES or NO
 WANT_EMOJI="YES"
 
+#
+# END USER CONFIGURATION
+#
+
+LIQUID_PROMPT=/usr/local/share/liquidprompt
 
 function _commandExists() {
     hash "$@" 2>/dev/null
@@ -14,14 +19,15 @@ function _commandExists() {
 
 _commandExists brew && [[ -f $(brew --prefix)/etc/bash_completion ]] && . $(brew --prefix)/etc/bash_completion
 
-if [[ "$PROMPT_TYPE" == "CUSTOM" ]]; then
-    [[ -f ~/.bash_prompt ]] && source ~/.bash_prompt
+# Set up the prompt
+if [ -r ~/.bash_prompt ] && ( [ "$PROMPT_TYPE" == "CUSTOM" ] || [ ! -r $LIQUID_PROMPT ] ); then
+    . ~/.bash_prompt
 elif [[ "$PROMPT_TYPE" == "POWERLINE" ]]; then
     if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
         PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
     fi
-elif [ -f /usr/local/share/liquidprompt ]; then
-    . /usr/local/share/liquidprompt
+elif [ -r $LIQUID_PROMPT ]; then
+    . $LIQUID_PROMPT
 fi
 
 function _update_ps1() {
