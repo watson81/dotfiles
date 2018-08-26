@@ -16,7 +16,6 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
 
         if command -v brew >/dev/null; then
             export HOMESHICK_DIR="$(brew --prefix)/opt/homeshick"
-            . "$(brew --prefix)/opt/homeshick/homeshick.sh"
 
             [ -d "$(brew --prefix)/opt/openssl/bin" ] && PATH="$(brew --prefix)/opt/openssl/bin":$PATH
         fi
@@ -31,5 +30,20 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         export HOMEBREW_UPGRADE_CLEANUP="YES"
 
         ;;
+
+    *:Linux:*:*)
+
+        # Include Homeshick if it is installed
+        if [ -r "$HOME/.homesick/repos/homeshick/homeshick.sh" ]; then
+            export HOMESHICK_DIR="$HOME/.homesick/repos/homeshick"
+        fi
+
+        ;;
+
 esac
+
+if [ -r "$HOMESHICK_DIR/homeshick.sh" ]; then
+    . "$HOMESHICK_DIR/homeshick.sh"
+    [ -r "$HOMESHICK_DIR/completions/homeshick-completion.bash" ] && . "$HOMESHICK_DIR/completions/homeshick-completion.bash"
+fi
 
