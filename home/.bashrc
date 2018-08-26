@@ -63,6 +63,6 @@ alias sha512sum='shasum -a 512'
 if [ -r "$HOMESHICK_DIR/homeshick.sh" ]; then
     . "$HOMESHICK_DIR/homeshick.sh"
     if [ -r "$HOMESHICK_DIR/completions/homeshick-completion.bash" ]; then
-        "$HOMESHICK_DIR/completions/homeshick-completion.bash"
+        . "$HOMESHICK_DIR/completions/homeshick-completion.bash"
     fi
 fi
