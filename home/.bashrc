@@ -53,3 +53,9 @@ alias sha224sum='shasum -a 224'
 alias sha256sum='shasum -a 256'
 alias sha384sum='shasum -a 384'
 alias sha512sum='shasum -a 512'
+
+if [ -r "$HOMESHICK_DIR/homeshick.sh" ]; then
+    . "$HOMESHICK_DIR/homeshick.sh"
+    [ -r "$HOMESHICK_DIR/completions/homeshick-completion.bash" ] && . "$HOMESHICK_DIR/completions/homeshick-completion.bash"
+fi
+
