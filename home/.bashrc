@@ -21,7 +21,11 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
     *:Darwin:*:*)
         _commandExists brew && [[ -f $(brew --prefix)/etc/bash_completion ]] && . $(brew --prefix)/etc/bash_completion
 
-        LIQUID_PROMPT=/usr/local/share/liquidprompt
+        if [ -r "$HOME/.homesick/repos/liquidprompt/liquidprompt" ]; then
+            LIQUID_PROMPT="$HOME/.homesick/repos/liquidprompt/liquidprompt"
+        else
+            LIQUID_PROMPT=/usr/local/share/liquidprompt
+        fi
 
         # -G enables colors
         LS_OPTIONS='-G'
