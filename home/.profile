@@ -19,7 +19,9 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         if command -v brew >/dev/null; then
             HOMESHICK_DIR="$(brew --prefix)/opt/homeshick"
 
-            [ -d "$(brew --prefix)/opt/openssl/bin" ] && PATH="$(brew --prefix)/opt/openssl/bin":$PATH
+            if [ -d "$(brew --prefix)/opt/openssl/bin" ]; then
+                PATH="$(brew --prefix)/opt/openssl/bin":$PATH
+            fi
         else
             HOMESHICK_DIR="$HOME/.homesick/repos/homeshick"
         fi

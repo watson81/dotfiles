@@ -19,7 +19,9 @@ function _commandExists() {
 
 case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
     *:Darwin:*:*)
-        _commandExists brew && [[ -f $(brew --prefix)/etc/bash_completion ]] && . $(brew --prefix)/etc/bash_completion
+        if _commandExists brew && [ -r $(brew --prefix)/etc/bash_completion ]; then
+            . $(brew --prefix)/etc/bash_completion
+        fi
 
         if [ -r "$HOME/.homesick/repos/liquidprompt/liquidprompt" ]; then
             LIQUID_PROMPT="$HOME/.homesick/repos/liquidprompt/liquidprompt"
@@ -60,6 +62,7 @@ alias sha512sum='shasum -a 512'
 
 if [ -r "$HOMESHICK_DIR/homeshick.sh" ]; then
     . "$HOMESHICK_DIR/homeshick.sh"
-    [ -r "$HOMESHICK_DIR/completions/homeshick-completion.bash" ] && . "$HOMESHICK_DIR/completions/homeshick-completion.bash"
+    if [ -r "$HOMESHICK_DIR/completions/homeshick-completion.bash" ]; then
+        "$HOMESHICK_DIR/completions/homeshick-completion.bash"
+    fi
 fi
-
