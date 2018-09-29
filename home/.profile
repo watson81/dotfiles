@@ -35,6 +35,9 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         # brew upgrade always assumes --cleanup has been passed
         export HOMEBREW_UPGRADE_CLEANUP="YES"
 
+        # Install screensavers system-wide
+        export HOMEBREW_CASK_OPTS="--screen_saverdir=/Library/Screen\ Savers/"
+
         ;;
 
     *:Linux:*:*)
