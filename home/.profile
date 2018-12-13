@@ -12,16 +12,38 @@ UNAME_VERSION=`(uname -v) 2>/dev/null` || UNAME_VERSION=unknown
 
 export HOMESHICK_DIR
 
+function TryAddToPath {
+    if [ -d "$1" ]; then
+        PATH="$1":$PATH
+    fi
+}
+
 case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
     *:Darwin:*:*)
         UNAME_PROCESSOR=`uname -p` || UNAME_PROCESSOR=unknown
 
-        if command -v brew >/dev/null; then
+        function HasBrew {
+            command -v brew >/dev/null
+        }
+        function TryAddBrewPaths {
+            PREFIX=""
+            if HasBrew; then
+                PREFIX="$(brew --prefix)"
+            fi
+
+            for d in "$@"
+            do
+                TryAddToPath "${PREFIX}$d"
+            done
+        }
+
+        if HasBrew; then
             HOMESHICK_DIR="$(brew --prefix)/opt/homeshick"
 
-            if [ -d "$(brew --prefix)/opt/openssl/bin" ]; then
-                PATH="$(brew --prefix)/opt/openssl/bin":$PATH
-            fi
+            TryAddBrewPaths "/opt/openssl/bin" \
+                            "/opt/zip/bin" \
+                            "/opt/unzip/bin" \
+                            "/opt/bzip2/bin"
         else
             HOMESHICK_DIR="$HOME/.homesick/repos/homeshick"
         fi
@@ -47,3 +69,7 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         ;;
 
 esac
+
+unset -f TryAddToPath
+unset -f HasBrew
+unset -f TryAddBrewPaths
