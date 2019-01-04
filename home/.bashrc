@@ -2,7 +2,7 @@
 # This file is used for bash interactive settings
 
 # powerline or custom
-PROMPT_TYPE="CUSTOM"
+#PROMPT_TYPE="CUSTOM"
 
 # if custom: YES or NO
 WANT_EMOJI="YES"
