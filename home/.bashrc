@@ -17,6 +17,19 @@ function _commandExists() {
     hash "$@" 2>/dev/null
 }
 
+function serve_via_http {
+   PORT=${@:-8000}
+   echo Serving $(pwd)
+
+   if _commandExists python3 && python3 -c "import http.server" &>/dev/null; then
+      python3 -m http.server ${PORT}
+   elif _commandExists python2 && python2 -c "import SimpleHTTPServer" &>/dev/null; then
+      python2 -m SimpleHTTPServer ${PORT}
+   else
+      echo "No python interpreter with an appropriate server module found."
+   fi
+}
+
 case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
     *:Darwin:*:*)
         if _commandExists brew && [ -r $(brew --prefix)/etc/bash_completion ]; then
