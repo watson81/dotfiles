@@ -10,6 +10,9 @@ UNAME_RELEASE=`(uname -r) 2>/dev/null` || UNAME_RELEASE=unknown
 UNAME_SYSTEM=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
 UNAME_VERSION=`(uname -v) 2>/dev/null` || UNAME_VERSION=unknown
 
+# Tell Microsoft to stop spying on me
+export DOTNET_CLI_TELEMETRY_OPTOUT=true
+
 export HOMESHICK_DIR
 
 function TryAddToPath {
