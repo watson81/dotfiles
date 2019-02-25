@@ -5,10 +5,10 @@ PATH=${PATH}:~/bin
 
 # Figure out what OS this is being run on
 # Inspired by GNU's config.guess from the config project (http://savannah.gnu.org/projects/config/)
-UNAME_MACHINE=`(uname -m) 2>/dev/null` || UNAME_MACHINE=unknown
-UNAME_RELEASE=`(uname -r) 2>/dev/null` || UNAME_RELEASE=unknown
-UNAME_SYSTEM=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
-UNAME_VERSION=`(uname -v) 2>/dev/null` || UNAME_VERSION=unknown
+export UNAME_MACHINE=`(uname -m) 2>/dev/null` || UNAME_MACHINE=unknown
+export UNAME_RELEASE=`(uname -r) 2>/dev/null` || UNAME_RELEASE=unknown
+export UNAME_SYSTEM=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
+export UNAME_VERSION=`(uname -v) 2>/dev/null` || UNAME_VERSION=unknown
 
 # Tell Microsoft to stop spying on me
 export DOTNET_CLI_TELEMETRY_OPTOUT=true
