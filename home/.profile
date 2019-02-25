@@ -57,9 +57,6 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         # Use a check instead of a beer 🍺
         export HOMEBREW_INSTALL_BADGE="✅  "
 
-        # brew upgrade always assumes --cleanup has been passed
-        export HOMEBREW_UPGRADE_CLEANUP="YES"
-
         # Install screensavers system-wide
         export HOMEBREW_CASK_OPTS="--screen_saverdir=/Library/Screen\ Savers/"
 
