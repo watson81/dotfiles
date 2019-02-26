@@ -11,6 +11,10 @@ WANT_EMOJI="YES"
 # END USER CONFIGURATION
 #
 
+if [ -z "${PROFILE_SOURCED}" ]; then
+    source ~/.profile
+fi
+
 export LS_OPTIONS
 
 function _commandExists() {
