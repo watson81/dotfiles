@@ -102,6 +102,12 @@ if _commandExists keybase; then
     complete -o "default" -F _keybase_completion keybase
 fi
 
+# See https://github.com/nvbn/thefuck
+# re-executes failted commands with corrections
+if _commandExists thefuck ; then
+    eval $(thefuck --alias)
+fi
+
 # Set up the prompt
 if [ -r ~/.bash_prompt ] && ( [ "$PROMPT_TYPE" == "CUSTOM" ] || [ ! -r $LIQUID_PROMPT ] ); then
     . ~/.bash_prompt
