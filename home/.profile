@@ -10,6 +10,7 @@ UNAME_MACHINE=`(uname -m) 2>/dev/null` || UNAME_MACHINE=unknown
 UNAME_RELEASE=`(uname -r) 2>/dev/null` || UNAME_RELEASE=unknown
 UNAME_SYSTEM=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
 UNAME_VERSION=`(uname -v) 2>/dev/null` || UNAME_VERSION=unknown
+HOSTNAME_SHORT=`(hostname -s | tr '[:upper:]' '[:lower:]') 2>/dev/null` || HOSTNAME_SHORT=unknown
 
 # Tell Microsoft to stop spying on me
 export DOTNET_CLI_TELEMETRY_OPTOUT=true
@@ -70,6 +71,11 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         ;;
 
 esac
+
+# include additional machine-specific configuration
+if [ -f "$HOME/.profile-$HOSTNAME_SHORT" ]; then
+    . "$HOME/.profile-$HOSTNAME_SHORT"
+fi
 
 unset -f TryAddToPath
 unset -f HasBrew

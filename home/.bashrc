@@ -131,3 +131,8 @@ if [ -r "$HOMESHICK_DIR/homeshick.sh" ]; then
         . "$HOMESHICK_DIR/completions/homeshick-completion.bash"
     fi
 fi
+
+# include additional machine-specific configuration
+if [ -f "$HOME/.bashrc-$HOSTNAME_SHORT" ]; then
+    . "$HOME/.bashrc-$HOSTNAME_SHORT"
+fi
