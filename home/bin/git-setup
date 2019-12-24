@@ -1,0 +1,36 @@
+#!/bin/sh
+
+echo This will configure git for you
+
+GIT_CFG_CMD="git config --global"
+
+DO_NOT_SET="<DO NOT SET>"
+NAME_DEFAULT="Patrick Watson"
+EMAIL_DEFAULT="watson81@users.noreply.github.com"
+SIGN_DEFAULT="true"
+EDITOR_DEFAULT=`(which code) 2>/dev/null`
+if [ -n "${EDITOR_DEFAULT}" ]; then
+    EDITOR_DEFAULT="${EDITOR_DEFAULT} --wait"
+else
+    EDITOR_DEFAULT=`(which nano) 2>/dev/null`
+    if [ -z "${EDITOR_DEFAULT}" ]; then
+        EDITOR_DEFAULT="${DO_NOT_SET}"
+    fi
+fi
+
+read -p "Name: [${NAME_DEFAULT}] " NAME
+read -p "Email: [${EMAIL_DEFAULT}] " EMAIL
+read -p "Sign all commits? [${SIGN_DEFAULT}] " SIGN
+read -p "Editor: [${EDITOR_DEFAULT}] " EDITOR
+
+[ -n "${NAME}"   ] ||   NAME="${NAME_DEFAULT}"
+[ -n "${EMAIL}"  ] ||  EMAIL="${EMAIL_DEFAULT}"
+[ -n "${SIGN}"   ] ||   SIGN="${SIGN_DEFAULT}"
+[ -n "${EDITOR}" ] || EDITOR="${EDITOR_DEFAULT}"
+
+${GIT_CFG_CMD} alias.co checkout
+${GIT_CFG_CMD} log.showSignature true
+${GIT_CFG_CMD} user.name "${NAME}"
+${GIT_CFG_CMD} user.email "${EMAIL}"
+${GIT_CFG_CMD} commit.gpgSign "${SIGN}"
+[ "${EDITOR}" = "${DO_NOT_SET}" ] || ${GIT_CFG_CMD} code.editor "${EDITOR}"
