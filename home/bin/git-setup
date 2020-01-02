@@ -33,4 +33,4 @@ ${GIT_CFG_CMD} log.showSignature true
 ${GIT_CFG_CMD} user.name "${NAME}"
 ${GIT_CFG_CMD} user.email "${EMAIL}"
 ${GIT_CFG_CMD} commit.gpgSign "${SIGN}"
-[ "${EDITOR}" = "${DO_NOT_SET}" ] || ${GIT_CFG_CMD} code.editor "${EDITOR}"
+[ "${EDITOR}" = "${DO_NOT_SET}" ] || ${GIT_CFG_CMD} core.editor "${EDITOR}"
