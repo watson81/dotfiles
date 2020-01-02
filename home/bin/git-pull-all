@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+for d in $( find . -mindepth 2 -maxdepth 4 -type d ); do
+   pushd "${d}" &>/dev/null
+   if [ -d .git ]; then
+      echo "[PULL] ${d}"
+      git pull --ff-only --all
+   fi
+   popd &>/dev/null
+done
