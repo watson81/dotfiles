@@ -132,6 +132,11 @@ if [ -r "$HOMESHICK_DIR/homeshick.sh" ]; then
     fi
 fi
 
+if [ -r "${HOME}/.aws/credentials" ]; then
+    export AWS_SHARED_CREDENTIALS_FILE="${HOME}/.aws/credentials"
+    export AWS_DEFAULT_REGION=us-east-1
+fi
+
 # include additional machine-specific configuration
 if [ -f "$HOME/.bashrc-$HOSTNAME_SHORT" ]; then
     . "$HOME/.bashrc-$HOSTNAME_SHORT"
