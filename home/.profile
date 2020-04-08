@@ -17,6 +17,9 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=true
 
 export HOMESHICK_DIR
 
+# Tell pipenv to keep the virtual environments where I can find them
+export PIPENV_VENV_IN_PROJECT=true
+
 function TryAddToPath {
     if [ -d "$1" ]; then
         PATH="$1":$PATH
