@@ -4,6 +4,7 @@ echo This will configure git for you
 
 NAME_DEFAULT="Patrick Watson"
 EMAIL_DEFAULT="watson81@users.noreply.github.com"
+SIGN_KEY_ID="B290740224CB30A8EE2E37A4DE53CC1DE39D5A03"
 SIGN_DEFAULT="true"
 EDITOR_DEFAULT="$(which code 2>/dev/null)"
 if [ -n "${EDITOR_DEFAULT}" ]; then
@@ -63,13 +64,14 @@ function setGitConfig {
 }
 
 printf "%bEnter an empty string to unset the config variable.%b\n" "${BLUE}" "${NC}"
-setGitConfig "user.name"        "Name:"             "${NAME_DEFAULT}"
-setGitConfig "user.email"       "Email:"            "${EMAIL_DEFAULT}"
-setGitConfig "commit.gpgSign"   "Sign all commits?" "${SIGN_DEFAULT}"
+setGitConfig "user.name"        "Name:"                 "${NAME_DEFAULT}"
+setGitConfig "user.email"       "Email:"                "${EMAIL_DEFAULT}"
+setGitConfig "commit.gpgSign"   "Sign all commits?"     "${SIGN_DEFAULT}"
+setGitConfig "user.signingKey"  "Signing GPG KeyID:"    "${SIGN_KEY_ID}"
 
-if [ "${SCOPE}" = "--global}" ] ; then
+if [ "${SCOPE}" = "G" ] ; then
     ${GIT_CFG_CMD} log.showSignature true
     ${GIT_CFG_CMD} pull.ff only
     ${GIT_CFG_CMD} alias.co checkout
-    setGitConfig "core.editor"  "Editor:"           "${EDITOR_DEFAULT}"
+    setGitConfig "core.editor"  "Editor:"               "${EDITOR_DEFAULT}"
 fi
