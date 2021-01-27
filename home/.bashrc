@@ -36,8 +36,16 @@ function serve_via_http {
 
 case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
     *:Darwin:*:*)
-        if _commandExists brew && [ -r $(brew --prefix)/etc/bash_completion ]; then
-            . $(brew --prefix)/etc/bash_completion
+        if _commandExists brew ; then
+            if [[ -r "$(brew --prefix)/etc/bash_completion" ]] ; then
+                . "$(brew --prefix)/etc/bash_completion"
+            elif [[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] ; then
+                . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+            else
+                for COMPLETION_FILE in "$(brew --prefix)/etc/bash_completion.d/"* ; do
+                    [[ -r "$COMPLETION_FILE" ]] && . "$COMPLETION_FILE"
+                done
+            fi
         fi
 
         if _commandExists box ; then
