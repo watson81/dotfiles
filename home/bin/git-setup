@@ -1,37 +1,75 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 echo This will configure git for you
 
-GIT_CFG_CMD="git config --global"
-
-DO_NOT_SET="<DO NOT SET>"
 NAME_DEFAULT="Patrick Watson"
 EMAIL_DEFAULT="watson81@users.noreply.github.com"
 SIGN_DEFAULT="true"
-EDITOR_DEFAULT=`(which code) 2>/dev/null`
+EDITOR_DEFAULT="$(which code 2>/dev/null)"
 if [ -n "${EDITOR_DEFAULT}" ]; then
     EDITOR_DEFAULT="${EDITOR_DEFAULT} --wait"
 else
-    EDITOR_DEFAULT=`(which nano) 2>/dev/null`
-    if [ -z "${EDITOR_DEFAULT}" ]; then
-        EDITOR_DEFAULT="${DO_NOT_SET}"
-    fi
+    EDITOR_DEFAULT="$(which nano 2>/dev/null)"
 fi
 
-read -p "Name: [${NAME_DEFAULT}] " NAME
-read -p "Email: [${EMAIL_DEFAULT}] " EMAIL
-read -p "Sign all commits? [${SIGN_DEFAULT}] " SIGN
-read -p "Editor: [${EDITOR_DEFAULT}] " EDITOR
+CYAN='\033[0;36m'
+BLUE='\033[1;34m'
+RED='\033[0;31m'
+LRED='\033[1;31m'
+NC='\033[0m' # No Color
 
-[ -n "${NAME}"   ] ||   NAME="${NAME_DEFAULT}"
-[ -n "${EMAIL}"  ] ||  EMAIL="${EMAIL_DEFAULT}"
-[ -n "${SIGN}"   ] ||   SIGN="${SIGN_DEFAULT}"
-[ -n "${EDITOR}" ] || EDITOR="${EDITOR_DEFAULT}"
+read -rp "Configure [L]ocal or [G]lobal? [L] " SCOPE
+[ -n "${SCOPE}"  ] || SCOPE="L"
+# get only the first character, as upper case
+SCOPE=$(echo ${SCOPE:0:1} | tr '[:lower:]' '[:upper:]')
+if [ "${SCOPE}" = "G" ] ; then
+    printf "%bConfiguring globally%b\n" "${BLUE}" "${NC}"
+    GIT_CFG_CMD="git config --global"
+else
+    printf "%bConfiguring locally%b\n" "${BLUE}" "${NC}"
+    GIT_CFG_CMD="git config --local"
+fi
 
-${GIT_CFG_CMD} alias.co checkout
-${GIT_CFG_CMD} log.showSignature true
-${GIT_CFG_CMD} user.name "${NAME}"
-${GIT_CFG_CMD} user.email "${EMAIL}"
-${GIT_CFG_CMD} commit.gpgSign "${SIGN}"
-${GIT_CFG_CMD} pull.ff only
-[ "${EDITOR}" = "${DO_NOT_SET}" ] || ${GIT_CFG_CMD} core.editor "${EDITOR}"
+function confirmValue {
+    # $1 prompt
+    # $2 value
+    # returns entered text in $REPLY. If blank, return code is non-zero
+    read -rep "${1} " -i "${2}"
+    [ -n "${REPLY}" ]
+}
+
+function setGitConfig {
+    # $1 git config key
+    # $2 prompt
+    # $3 default value
+
+    local VALUE
+
+    if VALUE=$(git config --global --get "$1") ; then
+        printf "%bGLOBAL%b=%b%s%b\n" "${RED}" "${NC}" "${CYAN}" "${VALUE}" "${NC}"
+    fi
+    if VALUE=$(git config --local --get "$1") ; then
+        printf "%bLOCAL%b=%b%s%b\n" "${LRED}" "${NC}" "${CYAN}" "${VALUE}" "${NC}"
+    fi
+
+    if ! VALUE=$($GIT_CFG_CMD --get "$1") ; then
+        VALUE=$3
+    fi
+    if confirmValue "$2" "${VALUE}" ; then
+        ${GIT_CFG_CMD} "$1" "${REPLY}"
+    else
+        ${GIT_CFG_CMD} --unset "$1"
+    fi
+}
+
+printf "%bEnter an empty string to unset the config variable.%b\n" "${BLUE}" "${NC}"
+setGitConfig "user.name"        "Name:"             "${NAME_DEFAULT}"
+setGitConfig "user.email"       "Email:"            "${EMAIL_DEFAULT}"
+setGitConfig "commit.gpgSign"   "Sign all commits?" "${SIGN_DEFAULT}"
+
+if [ "${SCOPE}" = "--global}" ] ; then
+    ${GIT_CFG_CMD} log.showSignature true
+    ${GIT_CFG_CMD} pull.ff only
+    ${GIT_CFG_CMD} alias.co checkout
+    setGitConfig "core.editor"  "Editor:"           "${EDITOR_DEFAULT}"
+fi
