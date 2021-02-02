@@ -61,6 +61,10 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
 
         # -G enables colors
         LS_OPTIONS='-G'
+
+        # Otherwise GPG's pinentry can't figure out where to prompt
+        GPG_TTY=$(tty)
+        export GPG_TTY
     ;;
 
     *:Linux:*:*)
