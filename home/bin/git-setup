@@ -4,7 +4,7 @@ echo This will configure git for you
 
 NAME_DEFAULT="Patrick Watson"
 EMAIL_DEFAULT="watson81@users.noreply.github.com"
-SIGN_KEY_ID="B290740224CB30A8EE2E37A4DE53CC1DE39D5A03"
+#SIGN_KEY_ID="B290740224CB30A8EE2E37A4DE53CC1DE39D5A03"
 SIGN_DEFAULT="true"
 EDITOR_DEFAULT="$(which code 2>/dev/null)"
 if [ -n "${EDITOR_DEFAULT}" ]; then
@@ -67,7 +67,7 @@ printf "%bEnter an empty string to unset the config variable.%b\n" "${BLUE}" "${
 setGitConfig "user.name"        "Name:"                 "${NAME_DEFAULT}"
 setGitConfig "user.email"       "Email:"                "${EMAIL_DEFAULT}"
 setGitConfig "commit.gpgSign"   "Sign all commits?"     "${SIGN_DEFAULT}"
-setGitConfig "user.signingKey"  "Signing GPG KeyID:"    "${SIGN_KEY_ID}"
+#setGitConfig "user.signingKey"  "Signing GPG KeyID:"    "${SIGN_KEY_ID}"
 
 if [ "${SCOPE}" = "G" ] ; then
     ${GIT_CFG_CMD} log.showSignature true
