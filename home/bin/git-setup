@@ -46,10 +46,10 @@ function setGitConfig {
 
     local VALUE
 
-    if VALUE=$(git config --global --get "$1") ; then
+    if VALUE=$(git config --global --get "$1" 2>/dev/null) ; then
         printf "%bGLOBAL%b=%b%s%b\n" "${RED}" "${NC}" "${CYAN}" "${VALUE}" "${NC}"
     fi
-    if VALUE=$(git config --local --get "$1") ; then
+    if VALUE=$(git config --local --get "$1" 2>/dev/null) ; then
         printf "%bLOCAL%b=%b%s%b\n" "${LRED}" "${NC}" "${CYAN}" "${VALUE}" "${NC}"
     fi
 
@@ -73,5 +73,6 @@ if [ "${SCOPE}" = "G" ] ; then
     ${GIT_CFG_CMD} log.showSignature true
     ${GIT_CFG_CMD} pull.ff only
     ${GIT_CFG_CMD} alias.co checkout
+    ${GIT_CFG_CMD} init.defaultBranch main
     setGitConfig "core.editor"  "Editor:"               "${EDITOR_DEFAULT}"
 fi
