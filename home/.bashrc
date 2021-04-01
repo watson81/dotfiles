@@ -120,6 +120,14 @@ if _commandExists thefuck ; then
     eval $(thefuck --alias)
 fi
 
+# Set up Bash History Control; options are a colon seperated list of:
+#   ignorespace = ignore commands starting with spaces
+#   ignoredups = ignore duplicated BACK TO BACK commands (e.g running ls immediately followed by ls again)
+#   ignoreboth = do both of the above
+#   erasedups  = ignore duplicated commands no matter where they appear in the history
+HISTCONTROL="ignoredups:erasedups"
+HISTIGNORE="exit:ls:ll:pwd:clear:history"
+
 # Set up the prompt
 if [ -r ~/.bash_prompt ] && ( [ "$PROMPT_TYPE" == "CUSTOM" ] || [ ! -r $LIQUID_PROMPT ] ); then
     . ~/.bash_prompt
