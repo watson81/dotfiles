@@ -65,6 +65,8 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         # Otherwise GPG's pinentry can't figure out where to prompt
         GPG_TTY=$(tty)
         export GPG_TTY
+
+        alias date-iso='date +%FT%T%z'
     ;;
 
     *:Linux:*:*)
@@ -156,6 +158,7 @@ if [ -r "${HOME}/.aws/credentials" ]; then
     export AWS_SHARED_CREDENTIALS_FILE="${HOME}/.aws/credentials"
     export AWS_DEFAULT_REGION=us-east-1
 fi
+[ -r "${HOME}/.bashrc-aws-roles" ] && "${HOME}/.bashrc-aws-roles"
 
 # include additional machine-specific configuration
 if [ -f "$HOME/.bashrc-$HOSTNAME_SHORT" ]; then
