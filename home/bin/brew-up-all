@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#:  * `up-all`:
+#:    Simulaneously updates brew, fixes ownership of /usr/local/bin, and upgrades installed packages.
+
+hash "brew" 2>/dev/null || { echo "brew is not installed" 1>&2 ; exit 1 ; }
+
+echo "Updating Brew"
+brew update || { echo "brew update failed" 1>&2 ; exit 2 ; }
+
+HOMEBREW_PREFIX_PATH="$(brew --prefix)/bin"
+CURRENT_USER="$(whoami)"
+
+if [[ ! -O "${HOMEBREW_PREFIX_PATH}" ]] ; then
+    read -rep "Make ${CURRENT_USER} owner of ${HOMEBREW_PREFIX_PATH}? [Y] " -i Y
+    if [[ "${REPLY,,}" == "y" ]] ; then
+        sudo chown -R "${CURRENT_USER}" "${HOMEBREW_PREFIX_PATH}" || { echo "Changing owner failed" 1>&2 ; exit 2 ; }
+    fi
+fi
+
+if [[ -O "${HOMEBREW_PREFIX_PATH}" ]] && [[ ! -w "${HOMEBREW_PREFIX_PATH}" ]] ; then
+    read -rep "Make ${HOMEBREW_PREFIX_PATH} writable by ${CURRENT_USER}? [Y] " -i Y
+    if [[ "${REPLY,,}" == "y" ]] ; then
+        chmod u+w "${HOMEBREW_PREFIX_PATH}" || { echo "Chaning permissions failed" 1>&2 ; exit 2 ; }
+    fi
+fi
+
+OUTDATED="$(brew outdated -v)"
+if [[ -n "${OUTDATED}" ]]; then
+    printf "Outdated items:\n%s\n" "${OUTDATED}"
+    read -rep "Apply upgrades? [Y] " -i Y
+    [[ "${REPLY,,}" == "y" ]] && brew upgrade
+fi
