@@ -25,4 +25,4 @@ fi
 EKS_STATES="$(aws ec2 describe-instances --filters "Name=tag:role,Values=eks-worker" --query 'Reservations[*].Instances[*].{State:State.Name, Cluster:Tags[?starts_with(Key,`kubernetes.io/cluster/`)]|[0].Key}' | \
     jq '[. | flatten | .[] | { State: (.Cluster[22:52]+"-"+.State)}] | reduce .[].State as $state ( [[.[].State] | unique | {(.[]): 0}] | add; setpath([$state] ; .[$state] + 1))' )"
 
-echo "${EC2_STATES} ${EB_STATES} ${EKS_STATES}" | jq -s '. | add | setpath(["Account Name"];"'"${ACCOUNT_ALIAS}"'") | setpath(["Account Id"];"'"${ACCOUNT_ID}"'")'
+echo "${EC2_STATES} ${EB_STATES} ${EKS_STATES}" | jq -s '. | add | setpath(["Account Name"];"'"${ACCOUNT_ALIAS}"'") | setpath(["Account Id"];"'"${ACCOUNT_ID}"'") | setpath(["Region"];"'"${AWS_DEFAULT_REGION}"'")'
