@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 ACCOUNT_ALIAS=$(aws iam list-account-aliases --query AccountAliases[0] --output text)
 
