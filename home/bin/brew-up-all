@@ -27,7 +27,7 @@ fi
 if [[ -O "${HOMEBREW_PREFIX_PATH}" ]] && [[ ! -w "${HOMEBREW_PREFIX_PATH}" ]] ; then
     read -rep "Make ${HOMEBREW_PREFIX_PATH} writable by ${CURRENT_USER}? [Y] " -i Y
     if [[ "${REPLY,,}" == "y" ]] ; then
-        chmod u+w "${HOMEBREW_PREFIX_PATH}" || { echo "Chaning permissions failed" 1>&2 ; exit 2 ; }
+        chmod u+w "${HOMEBREW_PREFIX_PATH}" || { echo "Changing permissions failed" 1>&2 ; exit 2 ; }
     fi
 fi
 
