@@ -11,21 +11,24 @@ OUTDATED="$(brew outdated -v)"
 [[ -z "${OUTDATED}" ]] && exit 0
 
 printf "Outdated items:\n%s\n" "${OUTDATED}"
-read -rep "Apply upgrades? [Y] " -i Y
+read -rep "Apply upgrades? [Y] "
+REPLY=${REPLY:-y}
 [[ "${REPLY,,}" != "y" ]] && exit 0
 
 HOMEBREW_PREFIX_PATH="$(brew --prefix)/bin"
 CURRENT_USER="$(whoami)"
 
 if [[ ! -O "${HOMEBREW_PREFIX_PATH}" ]] ; then
-    read -rep "Make ${CURRENT_USER} owner of ${HOMEBREW_PREFIX_PATH}? [Y] " -i Y
+    read -rep "Make ${CURRENT_USER} owner of ${HOMEBREW_PREFIX_PATH}? [Y] "
+    REPLY=${REPLY:-y}
     if [[ "${REPLY,,}" == "y" ]] ; then
         sudo chown -R "${CURRENT_USER}" "${HOMEBREW_PREFIX_PATH}" || { echo "Changing owner failed" 1>&2 ; exit 2 ; }
     fi
 fi
 
 if [[ -O "${HOMEBREW_PREFIX_PATH}" ]] && [[ ! -w "${HOMEBREW_PREFIX_PATH}" ]] ; then
-    read -rep "Make ${HOMEBREW_PREFIX_PATH} writable by ${CURRENT_USER}? [Y] " -i Y
+    read -rep "Make ${HOMEBREW_PREFIX_PATH} writable by ${CURRENT_USER}? [Y] "
+    REPLY=${REPLY:-y}
     if [[ "${REPLY,,}" == "y" ]] ; then
         chmod u+w "${HOMEBREW_PREFIX_PATH}" || { echo "Changing permissions failed" 1>&2 ; exit 2 ; }
     fi
