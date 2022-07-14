@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+set -e
+
+MAX_GIT_REPO_SIZE=8192
+OS=${OS:-$(uname -s)}
+
+if [ "${OS}" = "Darwin" ]; then
+  format_unix_time() {
+    date -r "${1}" +'%Y%m%d%H%M.%S'
+  }
+elif [ "${OS}" = "Linux" ]; then
+  format_unix_time() {
+    date -d "@${1}" +'%Y%m%d%H%M.%S'
+  }
+else
+  echo "Unsupported Operating System: ${OS}" >&2
+fi
+
+print_usage() {
+  if [[ "$(ps -o comm= ${PPID})" = "git" ]]; then
+    MY_NAME=$(basename $0 | sed 's/git-/git /')
+  else
+    MY_NAME=$(basename $0)
+  fi
+  echo "Usage: ${MY_NAME} [<options>] [--] <pathspec>..." >&2
+  echo "       Sets file modification time to that of the file's last commit." >&2
+  echo "       By default, all unmodified files in the current repo will be updated." >&2
+  echo "       If a pathspec is provided, only these files will be updated." >&2
+  echo >&2
+  echo "   -h  Print this help message" >&2
+  echo "   -a  Process all files, even those with uncommitted changes" >&2
+}
+
+OPTIONS=":hHaA"
+
+while getopts "${OPTIONS}" ARG; do
+  case "${ARG}" in
+    a|A) ACT_ON_ALL_FILES="true";;
+    h|H) print_usage ;;
+    ?)
+      echo "Unknown option: -${OPTARG}." >&2
+      exit 2
+      ;;
+  esac
+done
+shift "$((OPTIND-1))"
+
+FILES_TO_CHANGE="$(printf "%s\n" "$@" | sort | uniq)"
+[ -n "${FILES_TO_CHANGE}" ] && [ -n "${ACT_ON_ALL_FILES}" ] && { echo "Ambigity error: you asked for all files to be processed but also provided pathspecs" >&2 ; exit 1; }
+
+REPO_FILE_COUNT=$(git ls-tree --full-tree -r --name-only HEAD | wc -l | tr -d " ")
+[ "${REPO_FILE_COUNT}" -gt "${MAX_GIT_REPO_SIZE}" ] && { echo "ERROR: Aborting due to oversized git repo (${REPO_FILE_COUNT} files)." >&2 ; exit 2; }
+
+# all files in git
+FULL_FILE_LIST=$(git ls-tree --full-tree -r --name-only HEAD | sort | uniq)
+
+if [ -n "${ACT_ON_ALL_FILES}" ] ; then
+  # if acting on all files, we already have the full list
+  FILES_TO_CHANGE="${FULL_FILE_LIST}"
+elif [ -z "${FILES_TO_CHANGE}" ] ; then
+  # if the list already contained a value, do nothing because we already have the list
+  # otherwise, populate it with the files that differ from HEAD, then do a diff
+  FILES_TO_CHANGE="$(comm -2 -3 <(echo "${FULL_FILE_LIST}") <(git diff --name-only))"
+fi
+
+while read -r FILE; do
+  TIME=$(format_unix_time "$(git log -1 --format="%at" -- "${FILE}")")
+  echo "${TIME}" "${FILE}" >&2
+  touch -t "${TIME}" "${FILE}"
+done <<< "${FILES_TO_CHANGE}"
