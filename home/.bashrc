@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # This file is used for bash interactive settings
 
-# powerline or custom
-#PROMPT_TYPE="CUSTOM"
-
-# if custom: YES or NO
-WANT_EMOJI="YES"
+# Prompt will use Liquidprompt, Starship, or Custom in that order based on availability
+# Override this by setting PROMPT_TYPE to one of those values
 
 #
 # END USER CONFIGURATION
@@ -53,12 +50,6 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
             BOX_AC_BASH_SETUP_PATH=~/Library/Caches/@box/cli/autocomplete/bash_setup && test -f $BOX_AC_BASH_SETUP_PATH && source $BOX_AC_BASH_SETUP_PATH;
         fi
 
-        if [ -r "$HOME/.homesick/repos/liquidprompt/liquidprompt" ]; then
-            LIQUID_PROMPT="$HOME/.homesick/repos/liquidprompt/liquidprompt"
-        else
-            LIQUID_PROMPT=/usr/local/share/liquidprompt
-        fi
-
         # -G enables colors
         LS_OPTIONS='-G'
 
@@ -71,8 +62,6 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
 
     *:Linux:*:*)
         LS_OPTIONS='--color=auto'
-
-        LIQUID_PROMPT=$HOME/.homesick/repos/liquidprompt/liquidprompt
 
         eval "`dircolors`"
     ;;
@@ -131,11 +120,24 @@ HISTCONTROL="ignoredups:erasedups"
 HISTIGNORE="exit:ls:ll:pwd:clear:history"
 
 # Set up the prompt
-if [ -r ~/.bash_prompt ] && ( [ "$PROMPT_TYPE" == "CUSTOM" ] || [ ! -r $LIQUID_PROMPT ] ); then
-    . ~/.bash_prompt
-elif [ -r $LIQUID_PROMPT ]; then
-    . $LIQUID_PROMPT
+if [ -r "${HOME}/.homesick/repos/liquidprompt/liquidprompt" ]; then
+    LIQUID_PROMPT="${HOME}/.homesick/repos/liquidprompt/liquidprompt"
+elif [ -r "/usr/local/share/liquidprompt" ]; then
+    LIQUID_PROMPT="/usr/local/share/liquidprompt"
 fi
+
+if [ -z "${PROMPT_TYPE}" ]; then
+    if   _commandExists starship ;      then PROMPT_TYPE="Starship"
+    elif [ -n "${LIQUID_PROMPT}" ];     then PROMPT_TYPE="Liquidprompt"
+    elif [ -r "${HOME}/.bash_prompt" ]; then PROMPT_TYPE="Custom"
+    fi
+fi
+
+case "${PROMPT_TYPE,,}" in
+    custom)         source "${HOME}/.bash_prompt"           || echo "ERROR: Custom prompt derped" ;;
+    liquidprompt)   source "${LIQUID_PROMPT}"               || echo "ERROR: Liquidprompt spilled" ;;
+    starship)       eval   "false || $(starship init bash)" || echo "ERROR: Starship failed to launch" ;;
+esac
 
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -lh'

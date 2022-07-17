@@ -15,7 +15,7 @@ elif infocmp xterm-256color >/dev/null 2>&1; then
 	ALLOW_EMOJI='YES';
 fi;
 
-if [[ "$ALLOW_EMOJI" == "YES" && "$WANT_EMOJI" == "YES" ]]; then
+if [[ "$ALLOW_EMOJI" == "YES" ]]; then
 	GIT_SYMBOLS_UNCOMMITTED='📫 ';
 	GIT_SYMBOLS_UNSTAGED='📝 ';
 	GIT_SYMBOLS_UNTRACKED='🆕 ';
