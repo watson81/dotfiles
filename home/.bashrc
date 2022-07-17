@@ -121,7 +121,7 @@ fi
 #   ignoredups = ignore duplicated BACK TO BACK commands (e.g running ls immediately followed by ls again)
 #   ignoreboth = do both of the above
 #   erasedups  = ignore duplicated commands no matter where they appear in the history
-HISTCONTROL="ignoredups:erasedups"
+HISTCONTROL="ignoreboth:erasedups"
 HISTIGNORE="exit:ls:ll:pwd:clear:history"
 
 # Set up the prompt
