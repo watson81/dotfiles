@@ -61,8 +61,6 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         # Otherwise GPG's pinentry can't figure out where to prompt
         GPG_TTY=$(tty)
         export GPG_TTY
-
-        alias date-iso='date +%FT%T%z'
     ;;
 
     *:Linux:*:*)
@@ -158,6 +156,8 @@ if _commandExists shasum ; then
     alias sha512sum='shasum -a 512'
 fi
 
+alias date-iso='date +%FT%T%z'
+alias date_iso='date +%FT%T%z | tr : _'
 
 if [ -r "${HOMESHICK_DIR}/homeshick.sh" ]; then
     . "${HOMESHICK_DIR}/homeshick.sh"
