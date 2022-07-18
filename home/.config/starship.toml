@@ -7,6 +7,13 @@ symbol = " "
 [buf]
 symbol = " "
 
+[c]
+symbol = " "
+
+[character]
+success_symbol = '[\$](Green)'
+error_symbol = '[\$](Red)'
+
 [conda]
 symbol = " "
 
@@ -40,7 +47,6 @@ diverged = "⇕⇡${ahead_count}⇣${behind_count}"
 behind = "⇣${count}"
 stashed = ""
 
-
 [golang]
 symbol = " "
 
@@ -52,6 +58,7 @@ symbol = " "
 
 [hostname]
 ssh_only = false
+format = "[$hostname$ssh_symbol]($style) in "
 
 [java]
 symbol = " "
@@ -77,6 +84,12 @@ symbol = " "
 [package]
 symbol = " "
 
+[python]
+symbol = " "
+
+[spack]
+symbol = "🅢 "
+
 [rust]
 symbol = " "
 
@@ -84,3 +97,15 @@ symbol = " "
 disabled = false
 symbol = ""
 format = '[\($symbol$status\)]($style) '
+
+[username]
+style_user = "bold dimmed green"
+format = "[$user@]($style)"
+show_always = true
+
+[custom.auth_proxy]
+command = "starship_modproxy.sh"
+when = "hash starship_modproxy.sh 2>/dev/null && starship_modproxy.sh"
+shell = [ "/usr/bin/env", "bash", "--norc", "--noprofile" ]
+description = "Symbol representing the HTTP proxy type"
+os = "macos"
