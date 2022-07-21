@@ -1,7 +1,7 @@
 #!/bin/sh
 # This file is read by any shell and should contain generic environment variable settings
 
-PATH=${PATH}:~/bin
+PATH=${HOME}/.local/bin:${HOME}/bin:${PATH}
 PROFILE_SOURCED=true
 
 # Figure out what OS this is being run on

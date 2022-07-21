@@ -8,6 +8,12 @@
 # END USER CONFIGURATION
 #
 
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
 if [ -z "${PROFILE_SOURCED}" ]; then
     source "${HOME}/.profile"
 fi
@@ -28,9 +34,6 @@ function serve_via_http {
       echo "No python interpreter with an appropriate server module found."
    fi
 }
-
-# Defined in OS-specific section below
-export LS_OPTIONS
 
 case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
     *:Darwin:*:*)
@@ -56,7 +59,8 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         fi
 
         # -G enables colors
-        LS_OPTIONS='-G'
+        LS_ALIAS_OPTIONS='-G'
+        GREP_ALIAS_OPTIONS='--color=auto'
 
         # Otherwise GPG's pinentry can't figure out where to prompt
         GPG_TTY=$(tty)
@@ -64,9 +68,17 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
     ;;
 
     *:Linux:*:*)
-        LS_OPTIONS='--color=auto'
+        LS_ALIAS_OPTIONS='--color=auto'
+        GREP_ALIAS_OPTIONS='--color=auto'
 
-        eval "$(dircolors)"
+        # enable color support of ls and also add handy aliases
+        if [ -x "/usr/bin/dircolors" ]; then
+            if [ -r "${HOME}/.dircolors" ]; then
+                eval "$(dircolors -b "${HOME}/.dircolors")"
+            else
+                eval "$(dircolors -b)"
+            fi
+        fi
     ;;
 
 esac
@@ -124,11 +136,20 @@ fi
 HISTCONTROL="ignoreboth:erasedups"
 HISTIGNORE="exit:ls:ll:pwd:clear:history"
 
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize 2>/dev/null
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x "/usr/bin/lesspipe" ] && eval "$(SHELL=/bin/sh lesspipe)"
+
 # Set up the prompt
 if [ -r "${HOME}/.homesick/repos/liquidprompt/liquidprompt" ]; then
     LIQUID_PROMPT="${HOME}/.homesick/repos/liquidprompt/liquidprompt"
 elif [ -r "/usr/local/share/liquidprompt" ]; then
     LIQUID_PROMPT="/usr/local/share/liquidprompt"
+elif [ -r "/usr/share/liquidprompt/liquidprompt" ]; then
+    LIQUID_PROMPT="/usr/share/liquidprompt/liquidprompt"
 fi
 
 if [ -z "${PROMPT_TYPE}" ]; then
@@ -144,9 +165,12 @@ case "${PROMPT_TYPE,,}" in
     starship)       eval   "false || $(starship init bash)" || echo "ERROR: Starship failed to launch" ;;
 esac
 
-alias ls='ls ${LS_OPTIONS}'
-alias ll='ls ${LS_OPTIONS} -lh'
-alias l='ls ${LS_OPTIONS} -lA'
+alias ls='ls ${LS_ALIAS_OPTIONS}'
+alias ll='ls ${LS_ALIAS_OPTIONS} -lh'
+alias l='ls ${LS_ALIAS_OPTIONS} -lA'
+alias grep='grep ${GREP_ALIAS_OPTIONS}'
+alias fgrep='fgrep ${GREP_ALIAS_OPTIONS}'
+alias egrep='egrep ${GREP_ALIAS_OPTIONS}'
 
 if _commandExists shasum ; then
     alias sha1sum='shasum'
@@ -173,6 +197,6 @@ fi
 [ -r "${HOME}/.bashrc-aws-roles" ] && "${HOME}/.bashrc-aws-roles"
 
 # include additional machine-specific configuration
-if [ -f "${HOME}/.bashrc-${HOSTNAME_SHORT}" ]; then
+if [ -r "${HOME}/.bashrc-${HOSTNAME_SHORT}" ]; then
     source "${HOME}/.bashrc-${HOSTNAME_SHORT}"
 fi

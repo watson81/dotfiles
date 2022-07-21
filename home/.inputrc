@@ -1,2 +1,7 @@
+# allow the use of the Home/End keys under Linux
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+
+# PgUp/PgDn searches the history
 "\e[5~": history-search-backward
 "\e[6~": history-search-forward
