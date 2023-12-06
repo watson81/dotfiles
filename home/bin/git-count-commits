@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+
+# CLI interface
+# git annual-commit-count [YEAR] dir1 [dir2 dir3...]
+
+set -o pipefail
+
+function usage {
+    [ $# -lt 1 ] || printf "%s\n" "ERROR: $*" >&2
+    exit
+}
+
+function warn {
+    printf "%s\n" "WARNING: $*" >&2
+}
+
+function error {
+    printf "%s\n" "ERROR: $*" >&2
+    exit
+}
+
+[ $# -gt 0 ] || usage "Too few parameters"
+YEAR=$1
+if [ -d "${YEAR}" ]; then
+    YEAR=$(date '+%Y')
+elif [[ ${YEAR} =~ ^[0-9]{4}$ ]] && ((YEAR >= 1900 && YEAR <= 2200)) ; then
+    shift
+else
+    usage "Unrecognized year: ${YEAR}"
+fi
+START="31 Dec $((YEAR-1))"
+END="01 Jan $((YEAR+1))"
+echo "Checking from ${START} to ${END}, non-inclusive." >&2
+
+TOTAL=0
+for dir in "$@"; do
+    if [ -d "${dir}" ]; then
+        if [ -d "${dir}/.git" ]; then
+            if pushd "${dir}" >/dev/null 2>&1 ; then
+                COMMIT_COUNTS=$(git shortlog -sn --all --since="${START}" --before="${END}" | awk '{print $1}' | paste -sd+ - )
+                if [ -n "${COMMIT_COUNTS}" ]; then
+                    # make sure that the results are only numbers and the plus sign. Validate your inputs!
+                    if [[ ${COMMIT_COUNTS} =~ ^[0-9]+(\+[0-9]+)*$ ]]; then
+                        REPO_TOTAL=$(echo "${COMMIT_COUNTS}" | bc)
+                        if REPO_REMOTE=$(git remote -v | head -n 1 | awk '{print $2}' | sed -E 's/^([^ @]+@)?//') ;
+                        then
+                            echo "${dir} (${REPO_REMOTE}): ${REPO_TOTAL} commits"
+                        else
+                            echo "${dir}: ${REPO_TOTAL} commits"
+                        fi
+                        TOTAL=$((TOTAL+REPO_TOTAL))
+                    else
+                        warn "Could not validate commit counts for repo ${dir}"
+                    fi
+                fi
+                popd >/dev/null 2>&1 || error "Directory change failure"
+            else
+                warn "Could not access ${dir}"
+            fi
+        else
+            warn "${dir} is not a git repository"
+        fi
+    else
+         warn "Unrecognized directory: ${dir}"
+    fi
+done
+echo "TOTAL: ${TOTAL} commits"
