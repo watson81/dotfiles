@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 
-profiles=$(grep -E '^\[.+\]$' ~/.aws/credentials | sed -e 's/^\[//' -e 's/]$//')
+# Check for standard AWS profiles, such as is used by AWS SSO
+profiles=$(grep -E '^\[profile .+\]$' ~/.aws/config | sed -e 's/^\[profile //' -e 's/]$//')
+# Fall back to using profiles originating in the credentials file (manual, SAML, etc.)
+[ -z "${profiles}" ] && profiles=$(grep -E '^\[.+\]$' ~/.aws/credentials | sed -e 's/^\[//' -e 's/]$//')
 regions="${AWS_ACTIVE_REGIONS:-${AWS_DEFAULT_REGION:-us-east-1}}"
 
 export AWS_PROFILE

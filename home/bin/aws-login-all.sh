@@ -4,6 +4,8 @@
 
 ! hash saml2aws 2>/dev/null && echo "Requires saml2aws" && exit
 
+echo "WARNING: AWS SAML Authentication is deprecated. Use AWS SSO instead." >&2
+
 [ -r "${HOME}/.aws/available-roles.sh" ] && . "${HOME}/.aws/available-roles.sh" 
 
 if [ "${#KBG_AWS_ROLES[*]}" -lt "1" ]; then
