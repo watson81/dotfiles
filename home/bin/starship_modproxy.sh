@@ -10,12 +10,15 @@ else
     exit 1
 fi
 
+GREEN='\e[32m'
+RED='\e[31m'
+
 if [[ ${URL} =~ ^(https?://)?[^/@:]+:[^/@]+@[^/]+\.[^/]+ ]] ; then
     # Authenticated proxy
-    printf "%s" ''
+    printf "${RED}%s" ''
 elif [[ ${URL} =~ ^(https?://)?[^/]+\.[^/]+ ]] ; then
     # Unauthenticated proxy
-    printf "%s" ''
+    printf "${GREEN}%s" ''
 else
     # Invalid value
     exit 2
