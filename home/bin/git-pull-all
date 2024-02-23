@@ -1,10 +1,43 @@
 #!/usr/bin/env bash
 
-for d in $( find . -mindepth 2 -maxdepth 4 -type d ); do
-   pushd "${d}" &>/dev/null
-   if [ -d .git ]; then
-      echo "[PULL] ${d}"
-      git pull --ff-only --all
+DIRS_TO_SEARCH=( )
+
+for arg in "$@"
+do
+   if [ -d "${arg}" ] ; then
+      DIRS_TO_SEARCH+=("${arg}")
+   else
+      printf "[\e[31mWARNING\e[0m] Not a directory: %s\n" "${arg}" >&2
    fi
-   popd &>/dev/null
 done
+(( ${#DIRS_TO_SEARCH[@]} == 0 )) && DIRS_TO_SEARCH=( "." )
+
+function uniq_array() {
+   # remove dupes from the array name in $1
+   local expansion="${1}[@]"
+   mapfile -t "${1}" < <(printf "%s\n" "${!expansion}" | sort -u)
+   # mapfile -t DIRS_TO_SEARCH < <(printf "%s\n" "${DIRS_TO_SEARCH[@]}" | sort -u)
+}
+
+uniq_array DIRS_TO_SEARCH
+
+# find every .git directory, get it's canonical name, make sure that's unique, then get it's parent's name
+mapfile -t REPOS < <( find "${DIRS_TO_SEARCH[@]}" -type d -name .git -exec readlink -f {} + | sort -u | tr '\n' '\0' | xargs -0 dirname )
+
+for repo in "${REPOS[@]}" ; do
+   if cd "${repo}" &>/dev/null ; then
+      if [ -d .git ]; then
+         printf "[\e[36mINFO\e[0m] Pulling %s\n" "${repo}" >&2
+
+         if git pull --ff-only --all --prune ; then
+            SUCCESS+=("${repo}")
+         else
+            FAIL+=("${repo}")
+         fi
+      fi
+   fi
+done
+
+[ "${#SUCCESS[@]}" -gt 0 ] && { printf "[\e[32mSUCCESS\e[0m] Repos pulled successfully:\n" ; printf "[\e[32mSUCCESS\e[0m] %s\n" "${SUCCESS[@]}" ; } >&2
+[ "${#FAIL[@]}" -gt 0 ] && { printf "[\e[31mERROR\e[0m] Errors while pulling repos:\n" ; printf "[\e[31mERROR\e[0m] %s\n" "${FAIL[@]}" ; } >&2 && exit 1
+exit 0
