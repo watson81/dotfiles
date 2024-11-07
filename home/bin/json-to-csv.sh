@@ -18,7 +18,7 @@ EOF
 }
 
 for arg in "$@"; do
-    case "$arg" in
+    case "${arg}" in
         -h|--help)
             print_usage
             exit 0
@@ -34,7 +34,7 @@ for arg in "$@"; do
                 echo "Too many arguments" >&2
                 print_usage
                 exit 1
-            elif [ -r "$arg" ]; then
+            elif [ -r "${arg}" ]; then
                 INPUT=${arg}
             else
                 echo "File not found or not readable: ${arg}" >&2
