@@ -200,3 +200,8 @@ fi
 if [ -r "${HOME}/.bashrc-${HOSTNAME_SHORT}" ]; then
     source "${HOME}/.bashrc-${HOSTNAME_SHORT}"
 fi
+
+if _commandExists brew && [ -r "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh" ] ; then
+    . "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh"
+    . "$(brew --prefix)/opt/chruby/share/chruby/auto.sh"
+fi
