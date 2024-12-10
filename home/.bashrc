@@ -144,12 +144,14 @@ shopt -s checkwinsize 2>/dev/null
 [ -x "/usr/bin/lesspipe" ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Set up the prompt
-if [ -r "${HOME}/.homesick/repos/liquidprompt/liquidprompt" ]; then
+if [ -r "${HOME}/.homesick/repos/liquidprompt/liquidprompt" ]; then     # Source-installed via Homeshick
     LIQUID_PROMPT="${HOME}/.homesick/repos/liquidprompt/liquidprompt"
-elif [ -r "/usr/local/share/liquidprompt" ]; then
+elif [ -r "/usr/local/share/liquidprompt" ]; then                       # MacOS x86_64
     LIQUID_PROMPT="/usr/local/share/liquidprompt"
-elif [ -r "/usr/share/liquidprompt/liquidprompt" ]; then
+elif [ -r "/usr/share/liquidprompt/liquidprompt" ]; then                # Linux
     LIQUID_PROMPT="/usr/share/liquidprompt/liquidprompt"
+elif [ -r "/opt/homebrew/share/liquidprompt" ]; then                    # MacOS arm64
+    LIQUID_PROMPT="/opt/homebrew/share/liquidprompt"
 fi
 
 if [ -z "${PROMPT_TYPE}" ]; then

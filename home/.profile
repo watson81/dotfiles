@@ -33,6 +33,15 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
         function HasBrew {
             command -v brew >/dev/null
         }
+        function TryLoadBrewShellEnvFrom {
+            for d in "$@"
+            do
+                if [ -x "${d}/brew" ] ; then
+                    eval "$(${d}/brew shellenv)"
+                    return
+                fi
+            done
+        }
         function TryAddBrewPaths {
             PREFIX=""
             if HasBrew; then
@@ -45,25 +54,27 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
             done
         }
 
+        TryLoadBrewShellEnvFrom "/opt/homebrew/bin/" "/usr/local/bin"
         if HasBrew; then
-            HOMESHICK_DIR="$(brew --prefix)/opt/homeshick"
+            [ -d "$(brew --prefix)/opt/homeshick" ] && HOMESHICK_DIR="$(brew --prefix)/opt/homeshick"
 
             TryAddBrewPaths "/opt/openssl/bin" \
                             "/opt/zip/bin" \
                             "/opt/unzip/bin" \
-                            "/opt/bzip2/bin"
+                            "/opt/bzip2/bin" \
+                            "/opt/grep/libexec/gnubin"
+
+            # Only check for updates every hour
+            export HOMEBREW_AUTO_UPDATE_SECS=3600
+
+            # Use a check instead of a beer 🍺
+            export HOMEBREW_INSTALL_BADGE="✅  "
+
+            # Install screensavers system-wide
+            export HOMEBREW_CASK_OPTS="--screen_saverdir=/Library/Screen\ Savers/"
         else
-            HOMESHICK_DIR="$HOME/.homesick/repos/homeshick"
+            [ -d "$HOME/.homesick/repos/homeshick" ] && HOMESHICK_DIR="$HOME/.homesick/repos/homeshick"
         fi
-
-        # Only check for updates every hour
-        export HOMEBREW_AUTO_UPDATE_SECS=3600
-
-        # Use a check instead of a beer 🍺
-        export HOMEBREW_INSTALL_BADGE="✅  "
-
-        # Install screensavers system-wide
-        export HOMEBREW_CASK_OPTS="--screen_saverdir=/Library/Screen\ Savers/"
 
         ;;
 
