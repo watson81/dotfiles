@@ -40,7 +40,7 @@ class WordList(Sequence):
     @classmethod
     def doMatch(cls, line: str) -> str:
         if cls._parser is None:
-            cls._parser = re.compile("^\s*[1-6]*\s*(\S+)\s*$")
+            cls._parser = re.compile(r"^\s*[1-6]*\s*(\S+)\s*$")
         m = cls._parser.match(line)
         if m:
             return m.group(1)
